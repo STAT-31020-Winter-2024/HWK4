@@ -1,3 +1,34 @@
+function [x] = hwk4p1(x0, niter, eps)
+    
+    % Parameters for the Dogleg method
+    delta_max = 2.0;  
+    eta = 0.15;       
+    
+    % Initialize variables
+    x = x0;
+    num_linear_solves = 0;
+
+    for k = 1:niter
+        % Evaluate Rosenbrock function, gradient, and Hessian
+        [f, g, H] = rosenbrockFull(x);
+        
+        % Check for convergence based on gradient norm
+        if norm(g) < eps
+            break;  % Convergence criterion met
+        end
+        
+        % Dogleg trust-region step
+        [x, solved] = dogleg_trust_region(x, H, g, delta_max, eta);
+        num_linear_solves = num_linear_solves + solved;
+
+        % Check if maximum number of linear system solutions is reached
+        if num_linear_solves >= niter
+            break;  
+        end
+    end
+end
+
+
 % Initialize vectors to hold the timings
 a_n = []; 
 b_n = []; 
